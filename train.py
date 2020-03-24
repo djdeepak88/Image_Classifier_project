@@ -64,7 +64,8 @@ def main():
         print("Training Loss: {:.4f}  ".format(running_loss_t/pass_t))
         # Validation stats.
         print("\nValidation Epoch_Number: {}/{} ".format(epoch+1, args.epochs))
-        print("Validation Loss: {:.4f}  ".format(running_loss_v/pass_v),"Accuracy: {:.4f}".format(accuracy))
+        print("Validation Loss: {:.4f}  ".format(running_loss_v/pass_v))
+        print("\nAccuracy: {:.4f}".format(accuracy/pass_v))
 
         running_loss_t = 0
         running_loss_v = 0

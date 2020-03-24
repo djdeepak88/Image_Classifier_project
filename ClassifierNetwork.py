@@ -110,7 +110,7 @@ class ClassifierNetwork(object):
 
         top_p, top_class = ps.topk(1, dim=1)
         equals = top_class == labels.view(*top_class.shape)
-        accuracy = torch.mean(equals.type(torch.FloatTensor)).item()
+        accuracy += torch.mean(equals.type(torch.FloatTensor)).item()
 
         return running_loss, accuracy
 

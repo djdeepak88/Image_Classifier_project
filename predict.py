@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import json
 
 
-def get_input_args():
+def get_cmdline_parameters():
     """
     Parse command line arguments
     """
@@ -55,10 +55,8 @@ def predict(image_path, model, device, topk):
         print("Device name:", torch.cuda.get_device_name(torch.cuda.device_count()-1))
 
     model.to(device)
-
     # turn off dropout
     model.eval()
-
     # The image
     image = process_image(image_path)
     # Tranfer to tensor
@@ -69,7 +67,6 @@ def predict(image_path, model, device, topk):
     output = model.forward(image)
     # Get the probabliites by taking the log of the data.
     probabilities = torch.exp(output).data
-
     # Getting probability and index.
     prob = torch.topk(probabilities, topk)[0].tolist()[0]
     print(prob)
@@ -108,28 +105,32 @@ def load_checkpoint(checkpoint_path):
 
     return model, optimizer
 
-def visualize(img_path,cat_to_name, prob, classes):
+def display_predictions(img_path,cat_to_name,prob,classes):
 
     max_index = np.argmax(prob)
+    #print(max_index)
     max_probability = prob[max_index]
+    #print(max_probability)
     label = classes[max_index]
+    #print(label)
 
     fig = plt.figure(figsize=(10,10))
-    ax1 = plt.subplot2grid((15,9), (0,0), colspan=9, rowspan=9)
-    ax2 = plt.subplot2grid((15,9), (9,2), colspan=5, rowspan=5)
+    ax1 = plt.subplot2grid((15,10), (0,0), colspan=9, rowspan=9)
+    ax2 = plt.subplot2grid((15,10), (9,2), colspan=5, rowspan=5)
 
     image = Image.open(img_path)
     ax1.axis('off')
     ax1.set_title(cat_to_name[label])
     ax1.imshow(image)
 
-    labels = []
+    top_labels = []
     for cl in classes:
-        labels.append(cat_to_name[cl])
+        top_labels.append(cat_to_name[cl])
 
     y_pos = np.arange(5)
+
     ax2.set_yticks(y_pos)
-    ax2.set_yticklabels(labels)
+    ax2.set_yticklabels(top_labels)
     ax2.set_xlabel('Probability')
     ax2.invert_yaxis()
     ax2.barh(y_pos, prob, xerr=0, align='center', color='blue')
@@ -139,7 +140,7 @@ def visualize(img_path,cat_to_name, prob, classes):
 def main():
 
     # get commandline parameters.
-    args = get_input_args()
+    args = get_cmdline_parameters()
 
     # Load the category_names file.
     with open(args.category_names, 'r') as f:
@@ -161,7 +162,7 @@ def main():
         print("{}: {}".format(category_mappings[class_index], probability))
 
     # Visualization of the top 5 categories.
-    visualize(args.input, category_mappings, probabilities, classes)
+    display_predictions(args.input, category_mappings, probabilities, classes)
 
 
 main()

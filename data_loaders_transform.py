@@ -33,27 +33,30 @@ def get_data_loaders(data_path):
 def get_data_transforms():
 
     """
-    Data Transformation.
+    Data Transformation dictionary.
     """
 
-    return {
-        'train': transforms.Compose([transforms.RandomRotation(30),
+    data_transform_dict = {
+
+        "train": transforms.Compose([transforms.RandomRotation(30),
                                      transforms.RandomHorizontalFlip(),
                                      transforms.RandomResizedCrop(224),
                                      transforms.ToTensor(),
                                      transforms.Normalize([0.485,0.456,0.406],[0.229,0.224,0.225])
                                      ]
                                     ),
-        'val': transforms.Compose([transforms.Resize(256),
+        "val": transforms.Compose([transforms.Resize(256),
                                    transforms.CenterCrop(224),
                                    transforms.ToTensor(),
                                    transforms.Normalize([0.485,0.456,0.406],[0.229,0.224,0.225])
                                    ]
                                   ),
-        'test': transforms.Compose([transforms.Resize(256),
+        "test": transforms.Compose([transforms.Resize(256),
                                     transforms.CenterCrop(224),
                                     transforms.ToTensor(),
                                     transforms.Normalize([0.485,0.456,0.406],[0.229,0.224,0.225])
                                     ]
                                    )
     }
+
+    return data_transform_dict
