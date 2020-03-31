@@ -31,46 +31,46 @@ def main():
     # Intialize the trainer
     classifier_net = ClassifierNetwork(args.gpu,args.lr,args.arch, args.hidden_units)
 
-    # Intialize the training loss and validation loss.
-    running_loss_t = 0
-    running_loss_v = 0
-    accuracy = 0
+
 
     # Running the iterations for training.
     for epoch in range(int(args.epochs)):
 
         #training_count
         pass_t = 0
-
         #validation_count
         pass_v = 0
+        #Intialize accuracy
+        accuracy_train = 0
+        accuracy_valid = 0
+        # Intialize the training loss and validation loss.
+        running_loss_t = 0
+        running_loss_v = 0
 
         # Training phase.
         for input_t,labels_t in data_loaders['train']:
             pass_t += 1
             #print(data_t)
-            running_loss_t = classifier_net.train(input_t,labels_t, epoch,args.epochs,running_loss_t)
+            running_loss_t, accuracy_train = classifier_net.train(input_t,labels_t, epoch,args.epochs,running_loss_t,accuracy_train)
             print("Training_pass {}".format(pass_t))
 
         # Validation phase
         for input_v,labels_v in data_loaders['val']:
             pass_v += 1
             #print(data_v)
-            running_loss_v, accuracy = classifier_net.validate(input_v,labels_v, epoch,args.epochs,running_loss_v,accuracy)
+            running_loss_v, accuracy_valid = classifier_net.validate(input_v,labels_v, epoch,args.epochs,running_loss_v,accuracy_valid)
             print("Validation_pass {}".format(pass_v))
 
         # Statistics for the training and validation phase.
         print("\nTraining Epoch_Number: {}/{} ".format(epoch+1, args.epochs))
-        print("Training Loss: {:.4f}  ".format(running_loss_t/pass_t))
+        print("\nTraining Loss: {:.4f}  ".format(running_loss_t/pass_t))
+        print("\nTraining accuracy: {:.4f}".format(accuracy_train/pass_t))
         # Validation stats.
         print("\nValidation Epoch_Number: {}/{} ".format(epoch+1, args.epochs))
-        print("Validation Loss: {:.4f}  ".format(running_loss_v/pass_v))
-        print("\nAccuracy: {:.4f}".format(accuracy/pass_v))
+        print("\nValidation Loss: {:.4f}  ".format(running_loss_v/pass_v))
+        print("\nValidation Accuracy: {:.4f}".format(accuracy_valid/pass_v))
 
-        running_loss_t = 0
-        running_loss_v = 0
-
-    classifier_net.save_checkpoint(data_loaders['train'], args.save_dir, args.lr, args.epochs, args.arch)
+    classifier_net.save_checkpoint(data_loaders['train'], args.save_dir, args.lr, args.epochs)
 
 
 main()

@@ -96,11 +96,23 @@ def load_checkpoint(checkpoint_path):
     checkpoint = torch.load(checkpoint_path)
     learning_rate = checkpoint['learning_rate']
     model = getattr(models, checkpoint['arch'])(pretrained=True)
-    model.classifier = checkpoint['classifier']
+
     model.epochs = checkpoint['epochs']
+
+    # Reconstruct the resnet18 using the fc layer.
+    if checkpoint['arch'] == "resnet18":
+        model.fc = checkpoint['fc']
+    else:
+        model.classifier = checkpoint['classifier']
+
     model.load_state_dict(checkpoint['state_dict'])
     model.class_to_idx = checkpoint['class_to_idx']
-    optimizer = optim.SGD(model.classifier.parameters(), float(learning_rate))
+
+    if checkpoint['arch'] == "resnet18":
+       optimizer = optim.SGD(model.parameters(), float(learning_rate))
+    else:
+       optimizer = optim.SGD(model.classifier.parameters(), float(learning_rate))
+
     optimizer = optimizer.load_state_dict(checkpoint['optimizer_dict'])
 
     return model, optimizer
